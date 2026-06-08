@@ -1,0 +1,8 @@
+./models
+_err.txt
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+_out.txt
+_check_schema.py

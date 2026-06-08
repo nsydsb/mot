@@ -1,0 +1,29 @@
+[project]
+name = "mot-stream-service"
+version = "0.1.0"
+description = "Single-stream YOLO + ByteTrack MOT service with FFmpeg RTMP output."
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.111.0",
+  "uvicorn[standard]>=0.30.0",
+  "pydantic>=2.7.0",
+  "PyYAML>=6.0.1",
+  "numpy>=1.24.0",
+  "opencv-python>=4.8.0",
+  "ultralytics>=8.2.0",
+  "scipy>=1.10.0",
+]
+
+[tool.setuptools]
+packages = [
+  "app",
+  "config",
+  "source",
+  "detectors",
+  "trackers",
+  "trackers.bytetrack",
+  "render",
+  "sink",
+  "pipeline",
+  "logging_utils",
+]

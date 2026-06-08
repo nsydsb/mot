@@ -1,0 +1,49 @@
+source:
+  url: "rtsp://127.0.0.1/live/input"
+  width: 1280
+  height: 720
+  fps: 25
+  ffmpeg_bin: "/usr/bin/ffmpeg"
+  reconnect_delay_sec: 2.0
+  read_timeout_sec: 10.0
+
+detector:
+  model_type: "yolov8"
+  models_dir: "models"
+  conf: 0.25
+  iou: 0.45
+  imgsz: 640
+  device: null
+  classes: [0]  # COCO id 2 = car. Accepts ids or names: ["car", "truck"]. Empty / null = all classes.
+
+tracker:
+  track_thresh: 0.5
+  low_thresh: 0.1
+  match_thresh: 0.8
+  track_buffer: 30
+  min_box_area: 10.0
+
+render:
+  class_names: null
+  line_width: 2
+
+sink:
+  ffmpeg_bin: "/usr/bin/ffmpeg"
+  stream_name: "mot"
+  width: 1280
+  height: 720
+  fps: 25
+  bitrate: "2500k"
+  preset: "veryfast"
+
+logging:
+  level: "INFO"
+  ring_buffer_size: 500
+
+stats:
+  enabled: true
+  report_interval_sec: 60   # how often the periodic in-scene report is logged
+  active_window_sec: 5.0    # how long a track id is still counted after its last sighting
+  category_map:
+    vehicle: [1, 2, 3, 5, 7]   # bicycle, car, motorcycle, bus, truck
+    person: [0]
