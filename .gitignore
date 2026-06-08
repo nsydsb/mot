@@ -1,4 +1,4 @@
-./models
+./models/
 _err.txt
 __pycache__
 *.pyc
