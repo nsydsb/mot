@@ -68,7 +68,15 @@ class DetectionManager:
             if not self.pipeline:
                 return PipelineState(status=PipelineStatus.IDLE)
             pipeline = self.pipeline
-        return pipeline.stop()
+        state = pipeline.stop()
+        # Clear the reference so new WebSocket subscribers can't latch
+        # onto a stopped pipeline (which would never publish again).
+        # Done outside the manager lock to avoid a deadlock with the
+        # pipeline's own internal locks.
+        with self.lock:
+            if self.pipeline is pipeline:
+                self.pipeline = None
+        return state
 
     def stats(self) -> dict[str, Any] | None:
         """Return a JSON-serializable stats view, or None if no pipeline is
@@ -91,6 +99,16 @@ class DetectionManager:
             "tracked_ids": snap.tracked_ids,
             "taken_at": snap.taken_at,
         }
+
+    def current_pipeline(self) -> "TrackingPipeline | None":
+        """Return the active pipeline, or None if none is running.
+
+        Public accessor used by long-lived endpoints (e.g. the stats
+        WebSocket) that need to attach to a pipeline without racing the
+        ``stop()`` call.
+        """
+        with self.lock:
+            return self.pipeline
 
     @staticmethod
     def _validate_overrides(overrides: dict[str, Any]) -> dict[str, Any]:

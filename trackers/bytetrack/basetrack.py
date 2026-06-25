@@ -1,18 +1,13 @@
+"""Backwards-compat shim.
+
+The canonical implementation now lives in :mod:`trackers.common`. This
+module is kept so existing imports (``from trackers.bytetrack.basetrack
+import BaseTrack, TrackState``) keep working unchanged. New code should
+import from :mod:`trackers.common` directly.
+"""
+
 from __future__ import annotations
 
-from enum import Enum
+from trackers.common.basetrack import BaseTrack, TrackState
 
-
-class TrackState(str, Enum):
-    Tracked = "Tracked"
-    Lost = "Lost"
-    Removed = "Removed"
-
-
-class BaseTrack:
-    _count = 0
-
-    @classmethod
-    def next_id(cls) -> int:
-        cls._count += 1
-        return cls._count
+__all__ = ["BaseTrack", "TrackState"]

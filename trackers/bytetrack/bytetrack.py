@@ -1,35 +1,18 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import numpy as np
 
 from config.schema import TrackerConfig
-from trackers.bytetrack.basetrack import BaseTrack, TrackState
-from trackers.bytetrack.kalman_filter import KalmanFilter
-from trackers.bytetrack.matching import iou_distance, linear_assignment
-
-
-def xyxy_to_xyah(xyxy: np.ndarray) -> np.ndarray:
-    w = xyxy[2] - xyxy[0]
-    h = xyxy[3] - xyxy[1]
-    x = xyxy[0] + w / 2
-    y = xyxy[1] + h / 2
-    return np.array([x, y, w / max(h, 1e-6), h], dtype=np.float32)
-
-
-def xyah_to_xyxy(xyah: np.ndarray) -> np.ndarray:
-    x, y, a, h = xyah
-    w = a * h
-    return np.array([x - w / 2, y - h / 2, x + w / 2, y + h / 2], dtype=np.float32)
-
-
-@dataclass
-class Detection:
-    tlbr: np.ndarray
-    score: float
-    cls: float
-    det_ind: int
+from trackers.common import (
+    BaseTrack,
+    Detection,
+    KalmanFilter,
+    TrackState,
+    iou_distance,
+    linear_assignment,
+    xyah_to_xyxy,
+    xyxy_to_xyah,
+)
 
 
 class STrack(BaseTrack):
@@ -93,7 +76,14 @@ class BYTETracker:
     def update(self, dets: np.ndarray) -> list[STrack]:
         self.frame_id += 1
         detections = [
-            Detection(d[:4], float(d[4]), float(d[5]), i)
+            Detection(
+                tlbr=d[:4],
+                score=float(d[4]),
+                cls=float(d[5]),
+                det_ind=i,
+                # BYTETrack is motion-only; appearance is intentionally None.
+                embedding=None,
+            )
             for i, d in enumerate(dets)
             if (d[2] - d[0]) * (d[3] - d[1]) >= self.cfg.min_box_area
         ]

@@ -20,10 +20,15 @@ packages = [
   "config",
   "source",
   "detectors",
+  "detectors.detr",
   "trackers",
   "trackers.bytetrack",
+  "trackers.common",
+  "trackers.detr",
   "render",
   "sink",
   "pipeline",
   "logging_utils",
 ]
+
+

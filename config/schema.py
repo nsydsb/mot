@@ -59,6 +59,11 @@ class StatsConfig(BaseModel):
     enabled: bool = True
     # How often the periodic stats report is emitted to the log.
     report_interval_sec: float = Field(default=60.0, gt=0)
+    # How often the StatsPublisher pushes a fresh snapshot to WebSocket
+    # subscribers. Decoupled from the inference rate: a 1s cadence
+    # gives the frontend a smooth, predictable stream regardless of
+    # how fast the inferer is running.
+    publish_interval_sec: float = Field(default=1.0, gt=0)
     # How long a track is still considered "in scene" after its last sighting.
     # Prevents the count from dropping to zero on brief occlusions.
     active_window_sec: float = Field(default=5.0, gt=0)
